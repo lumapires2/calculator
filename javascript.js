@@ -1,11 +1,12 @@
 // Variables
 
+const nDecimal = 8
+
 const operators = document.querySelector(".operators")
 const numbers = document.querySelector(".numbers")
 
 const display = document.querySelector("#display")
 const history = document.querySelector("#history")
-const restart = document.querySelector("#restart")
 
 let num = ""
 let num1 = ""
@@ -18,9 +19,16 @@ let a
 let b
 let result
 
+let equal
+equal = false
+
+const restart = document.querySelector("#restart")
+
+// const keyboard = document
+
 // Calculator design
 
-let listOperators = ["+", "-", "×", "÷", "="]
+let listOperators = ["=", "+", "-", "×", "÷"]
 
 let listNumbers = []
 for (let i=9; i>=0; i--) {listNumbers.push(i)}
@@ -33,6 +41,7 @@ function addChildElementsBasedOnList(baseList, father) {
         const div = document.createElement("div")
         div.textContent = item
         father.appendChild(div)
+        if (item == "=") {div.id = "result"}
     })
 
 }
@@ -40,7 +49,7 @@ function addChildElementsBasedOnList(baseList, father) {
 // Math functions
 
 function add(a, b) {
-    return a + b
+    return (a + b)
 }
 
 function subtract(a, b) {
@@ -64,12 +73,19 @@ function resulting(a, b) {
     num = num2 = "";
     num1 = opResult;
 }
+
 // Display:
 
 dictOperations = {"+": add, "-": subtract, "×": multiply, '÷': divide, "=": resulting}
 
 function gettingOperationResult(operator) {
-    return dictOperations[operator](parseFloat(num1), parseFloat(num2));
+    result = dictOperations[operator](parseFloat(num1), parseFloat(num2));
+    if (result.toString().length > nDecimal + 1) {
+        before = result.toString().indexOf(".");
+        before = before == -1 ? 0 : before;
+        result = parseFloat(result).toFixed(nDecimal + 1 - before);
+    };
+    return result;
 }
 
 function displayNumberonScreen(e) {
@@ -101,29 +117,60 @@ function displayHistory() {
     }
 }
 
-function cleanDisplay() {
-    display.textContent = "";
-}
-
 function putResultInDisplay() {
     display.textContent = result;
 }
 
+function checkSize() {
+    console.log(num.toString.length)
+    if (num.toString().length > nDecimal + 1) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
 // Restarting:
 
+function cleanDisplay() {
+    display.textContent = "";
+}
 
+function cleanHistory() {
+    history.textContent = "";
+}
+
+function restarting() {
+    num = num1 = num2 = "";
+    lastOperator = currentOperator = undefined;
+    display.textContent = "";
+    history.textContent = "";
+}
 
 // Events:
 
 Array.from(numbers.children).forEach(number => {
     number.addEventListener("click", (e) => {
+        if (equal) {
+            cleanHistory();
+            cleanDisplay();
+            num1 = ""
+            equal = false;
+            lastOperator = undefined;
+            currentOperator = undefined;
+        }
         if (!!!currentOperator) {
-            num1 = num1.toString() + e.target.textContent.toString();
-            num = num1;
+            if (checkSize()) {
+                num1 = num1.toString() + e.target.textContent.toString();
+                num = num1;   
+            }
+
         } else {
-            putResultInDisplay();;
-            num2 =  num2.toString() + e.target.textContent.toString();
-            num = num2;
+            putResultInDisplay();
+            if (checkSize()) {
+                num2 =  num2.toString() + e.target.textContent.toString();
+                num = num2;    
+            }
         }
         displayNumberonScreen(e);
     })
@@ -132,6 +179,7 @@ Array.from(numbers.children).forEach(number => {
 Array.from(operators.children).forEach(operator => {
     operator.addEventListener("click", (e) => {
         lastOperator = currentOperator;
+        equal = false;
         if (num1 != "") {
             currentOperator = e.target.textContent;
             displayHistory();           
@@ -141,8 +189,11 @@ Array.from(operators.children).forEach(operator => {
                 putResultInDisplay();        
             }
         }
+        if (e.target.textContent == "="){
+            equal = true;
+        }
     })
 })
 
-
+restart.addEventListener("click", restarting)
 
