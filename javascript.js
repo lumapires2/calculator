@@ -102,11 +102,11 @@ function displayHistory() {
 }
 
 function cleanDisplay() {
-    if (currentOperator == "=") {
-        display.textContent = result;
-    } else {
-        display.textContent = "";
-    }
+    display.textContent = "";
+}
+
+function putResultInDisplay() {
+    display.textContent = result;
 }
 
 // Restarting:
@@ -121,7 +121,7 @@ Array.from(numbers.children).forEach(number => {
             num1 = num1.toString() + e.target.textContent.toString();
             num = num1;
         } else {
-            cleanDisplay();;
+            putResultInDisplay();;
             num2 =  num2.toString() + e.target.textContent.toString();
             num = num2;
         }
@@ -138,7 +138,7 @@ Array.from(operators.children).forEach(operator => {
             if (num2 != "") {  
                 displayResult();
                 displayHistory();
-                cleanDisplay();        
+                putResultInDisplay();        
             }
         }
     })
