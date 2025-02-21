@@ -5,6 +5,7 @@ const numbers = document.querySelector(".numbers")
 
 const display = document.querySelector("#display")
 const history = document.querySelector("#history")
+const restart = document.querySelector("#restart")
 
 let num = ""
 let num1 = ""
@@ -13,11 +14,13 @@ let num2 = ""
 let currentOperator
 let lastOperator
 
-let result = document.querySelector("#result")
+let a
+let b
+let result
 
 // Calculator design
 
-let listOperators = ["+", "-", "×", "÷"]
+let listOperators = ["+", "-", "×", "÷", "="]
 
 let listNumbers = []
 for (let i=9; i>=0; i--) {listNumbers.push(i)}
@@ -49,37 +52,80 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
+    if (b == 0) {
+        return 'ERROR'
+    }
     return a / b
 }
 
+function resulting(a, b) {
+    opResult = gettingOperationResult(currentOperator);
+    display.textContent =  opResult;
+    num = num2 = "";
+    num1 = opResult;
+}
 // Display:
 
+dictOperations = {"+": add, "-": subtract, "×": multiply, '÷': divide, "=": resulting}
+
+function gettingOperationResult(operator) {
+    return dictOperations[operator](parseFloat(num1), parseFloat(num2));
+}
+
 function displayNumberonScreen(e) {
-    num = num + e.textContent
     display.textContent = num;
 }
 
 function displayResult() {
-    num1 = dictOperations[lastOperator](num1, num2);
-    num2 = ""
+    a = parseFloat(num1);
+    b = parseFloat(num2);
+    result = gettingOperationResult(lastOperator);
+    num1 = result;
+    num2 = "";
+    if (isNaN(result)) {
+        display.textContent = "ERROR";
+    } else {
+        display.textContent = result;
+    }
 }
 
 function displayHistory() {
-    history.textContent = `${num1} ${currentOperator}`;
+    if (isNaN(num1)) {
+        history.textContent = "ERROR";
+    } else {
+        if (currentOperator == "=") {
+            history.textContent = `${a}${lastOperator}${b}`
+        } else {
+            history.textContent = `${num1} ${currentOperator}`;
+        }
+    }
 }
+
+function cleanDisplay() {
+    if (currentOperator == "=") {
+        display.textContent = result;
+    } else {
+        display.textContent = "";
+    }
+}
+
+// Restarting:
+
+
 
 // Events:
 
-dictOperations = {"+": add, "-": subtract, "*": multiply, '/': divide}
-
 Array.from(numbers.children).forEach(number => {
     number.addEventListener("click", (e) => {
-        displayNumberonScreen(e);
-        if (num1 == "") {
-            num1 = parseInt(num)
+        if (!!!currentOperator) {
+            num1 = num1.toString() + e.target.textContent.toString();
+            num = num1;
         } else {
-            num2 = parseInt(num)
+            cleanDisplay();;
+            num2 =  num2.toString() + e.target.textContent.toString();
+            num = num2;
         }
+        displayNumberonScreen(e);
     })
 })
 
@@ -91,7 +137,8 @@ Array.from(operators.children).forEach(operator => {
             displayHistory();           
             if (num2 != "") {  
                 displayResult();
-                displayHistory();         
+                displayHistory();
+                cleanDisplay();        
             }
         }
     })
