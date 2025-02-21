@@ -1,32 +1,24 @@
-// Variables
-
 const nDecimal = 8
 
 const operators = document.querySelector(".operators")
 const numbers = document.querySelector(".numbers")
 
 const display = document.querySelector("#display")
-const history = document.querySelector("#history")
 
 const dot = document.querySelector("#dot")
+const del = document.querySelector("#delete")
+const restart = document.querySelector("#restart")
 
 let num = ""
 let num1 = ""
 let num2 = ""
 
-let currentOperator
-let lastOperator
-
-let a
-let b
-let result
-
-let equal
-equal = false
-
-const restart = document.querySelector("#restart")
-
-// const keyboard = document
+let memory = {
+    num: "",
+    num1: "",
+    num2: "",
+    op: ""
+}
 
 // Calculator design
 
@@ -50,81 +42,72 @@ function addChildElementsBasedOnList(baseList, father) {
 
 // Math functions
 
-function add(a, b) {
-    return (a + b)
+
+function add() {
+    return parseFloat(memory.num1) + parseFloat(memory.num2)
 }
 
-function subtract(a, b) {
-    return a - b
+function subtract() {
+    return parseFloat(memory.num1) - parseFloat(memory.num2)
 }
 
-function multiply(a, b) {
-    return a * b
+function multiply() {
+    return parseFloat(memory.num1) * parseFloat(memory.num2)
 }
 
-function divide(a, b) {
-    if (b == 0) {
+function divide() {
+    if (memory.num2 == 0) {
         return 'ERROR'
     }
-    return a / b
+    return parseFloat(memory.num1) / parseFloat(memory.num2)
 }
 
-function resulting(a, b) {
-    opResult = gettingOperationResult(currentOperator);
-    display.textContent =  opResult;
-    num = num2 = "";
-    num1 = opResult;
-}
-
-// Display:
+// Operations:
 
 dictOperations = {"+": add, "-": subtract, "×": multiply, '÷': divide, "=": resulting}
 
-function gettingOperationResult(operator) {
-    result = dictOperations[operator](parseFloat(num1), parseFloat(num2));
-    if (result.toString().length > nDecimal + 1) {
+function gettingOperationResult(operator) {   
+
+    result = dictOperations[operator](parseFloat(memory.num1), parseFloat(memory.num2));
+    memory.num = result
+
+    if (!allOkWithSize()) {
         before = result.toString().indexOf(".");
         before = before == -1 ? 0 : before;
         result = parseFloat(result).toFixed(nDecimal + 1 - before);
     };
+
     return result;
 }
 
-function displayNumberonScreen(e) {
-    display.textContent = num;
+function resulting() {
+    opResult = gettingOperationResult(currentOperator);
+    display.textContent = opResult;
+    memory.num = memory.num2 = "";
+    memory.num1 = opResult;
 }
+
+
+// Display
 
 function displayResult() {
-    a = parseFloat(num1);
-    b = parseFloat(num2);
+
     result = gettingOperationResult(lastOperator);
-    num1 = result;
-    num2 = "";
+
+    memory.num1 = result;
+    memory.num2 = "";
+
     if (isNaN(result)) {
         display.textContent = "ERROR";
+
     } else {
-        display.textContent = result;
+        display.textContent = result;        
     }
+
 }
 
-function displayHistory() {
-    if (isNaN(num1)) {
-        history.textContent = "ERROR";
-    } else {
-        if (currentOperator == "=") {
-            history.textContent = `${a}${lastOperator}${b}`
-        } else {
-            history.textContent = `${num1} ${currentOperator}`;
-        }
-    }
-}
-
-function putResultInDisplay() {
-    display.textContent = result;
-}
-
-function checkSize() {
-    if (num.toString().length > nDecimal + 1) {
+function allOkWithSize(str=memory.num) {
+    if (str.toString().length > nDecimal + 1) {
         return false;
     } else {
         return true;
@@ -133,88 +116,114 @@ function checkSize() {
 
 function treatingDots(number) {
     if (number.indexOf(".") == -1) {
+        display.textContent = display.textContent + "."
         return number.toString() + "."
     } else {
         return number
     }
 }
 
-// Restarting:
+// Restarting
 
 function cleanDisplay() {
     display.textContent = "";
 }
 
-function cleanHistory() {
-    history.textContent = "";
-}
-
 function restarting() {
     num = num1 = num2 = "";
     lastOperator = currentOperator = undefined;
-    display.textContent = "";
-    history.textContent = "";
+    cleanDisplay()
 }
 
-// Events:
+// Events
 
 Array.from(numbers.children).forEach(number => {
     number.addEventListener("click", (e) => {
-        if (equal) {
-            cleanHistory();
-            cleanDisplay();
-            num1 = ""
-            equal = false;
-            lastOperator = undefined;
-            currentOperator = undefined;
-        }
-        if (!!!currentOperator) {
-            if (checkSize()) {
-                num1 = num1.toString() + e.target.textContent.toString();
-                num = num1;   
-            }
 
-        } else {
-            putResultInDisplay();
-            if (checkSize()) {
-                num2 =  num2.toString() + e.target.textContent.toString();
-                num = num2;    
+        if (memory.num1 == "" || !!!memory.op) {
+            if (allOkWithSize(memory.num1)) {
+                memory.num1 = memory.num1.toString() + e.target.textContent.toString();
+                memory.num = memory.num1;
+                display.textContent = memory.num1;
+            }        
+        }
+
+        else {
+            if (allOkWithSize(memory.num2)) {
+                memory.num2 =  memory.num2.toString() + e.target.textContent.toString();
+                memory.num = memory.num2;
+
+                if (memory.num2.toString().indexOf(".") == -1) {
+                    display.textContent = display.textContent + " " + memory.num2;
+                } else {
+                    display.textContent = display.textContent + e.target.textContent;
+                }
+                
             }
         }
-        displayNumberonScreen(e);
     })
 })
 
 Array.from(operators.children).forEach(operator => {
     operator.addEventListener("click", (e) => {
-        lastOperator = currentOperator;
-        equal = false;
-        if (num1 != "") {
-            currentOperator = e.target.textContent;
-            displayHistory();           
-            if (num2 != "") {  
-                displayResult();
-                displayHistory();
-                putResultInDisplay();        
+
+        lastOperator = memory.op;
+        memory.op = e.target.textContent;
+
+        if (memory.num1 == "" && memory.op == "-") {
+            memory.num1 = 0
+            display.textContent = memory.num1 + " " + memory.op
+
+        } else if (!memory.num1 == "" && memory.num2 == "") {
+            display.textContent = memory.num1 + " " + memory.op
+
+        } else if (!memory.num1 == "" && !memory.num2 == "") {
+            displayResult();
+
+            if (memory.op == "=") {
+                display.textContent = result;
+                memory.num1 = result;
+                memory.num2 = memory.op = "";
+
+            } else {
+                display.textContent = display.textContent + " " + memory.op;
             }
         }
-        if (e.target.textContent == "="){
-            equal = true;
-        }
+
     })
+
 })
 
 restart.addEventListener("click", restarting)
 
 dot.addEventListener("click", (e) => {
-    if (num1 == "") {
-        num1 = "0.";
-    } else if (num2 == "") {
-        num1 = treatingDots(num1);
-        num = num1;
-    } else {
-        num2 = treatingDots(num2);
-        num = num2;
+
+    if (memory.num1 == "") {
+        memory.num1 = "0.";
+
+    } else if (memory.num2 == "" && allOkWithSize(memory.num1)) {
+        memory.num1 = treatingDots(memory.num1);
+        memory.num = memory.num1;
+
+    } else if (!memory.num2 == "" && allOkWithSize(memory.num2)) {
+        memory.num2 = treatingDots(memory.num2);
+        memory.num = memory.num2;
     }
-    displayNumberonScreen(e)
+})
+
+del.addEventListener("click", (e) => {
+    
+    if (!memory.num2 == "") {
+        memory.num2 = memory.num2.toString().slice(0, -1)
+
+    } else if (!memory.op == "") {
+        memory.op = ""
+        lastOperator = ""
+
+    } else if (!memory.num1 == "") {
+        memory.num1 = memory.num1.toString().slice(0, -1)
+    }
+
+    display.textContent = memory.num1 + " " + memory.op + " " + memory.num2
+
 })
