@@ -8,6 +8,8 @@ const numbers = document.querySelector(".numbers")
 const display = document.querySelector("#display")
 const history = document.querySelector("#history")
 
+const dot = document.querySelector("#dot")
+
 let num = ""
 let num1 = ""
 let num2 = ""
@@ -122,11 +124,18 @@ function putResultInDisplay() {
 }
 
 function checkSize() {
-    console.log(num.toString.length)
     if (num.toString().length > nDecimal + 1) {
         return false;
     } else {
         return true;
+    }
+}
+
+function treatingDots(number) {
+    if (number.indexOf(".") == -1) {
+        return number.toString() + "."
+    } else {
+        return number
     }
 }
 
@@ -197,3 +206,15 @@ Array.from(operators.children).forEach(operator => {
 
 restart.addEventListener("click", restarting)
 
+dot.addEventListener("click", (e) => {
+    if (num1 == "") {
+        num1 = "0.";
+    } else if (num2 == "") {
+        num1 = treatingDots(num1);
+        num = num1;
+    } else {
+        num2 = treatingDots(num2);
+        num = num2;
+    }
+    displayNumberonScreen(e)
+})
