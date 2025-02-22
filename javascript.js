@@ -10,10 +10,6 @@ const dot = document.querySelector("#dot")
 const del = document.querySelector("#delete")
 const restart = document.querySelector("#restart")
 
-let num = ""
-let num1 = ""
-let num2 = ""
-
 let memory = {
     num: "",
     num1: "",
