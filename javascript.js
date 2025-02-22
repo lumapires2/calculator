@@ -158,7 +158,7 @@ function restarting() {
 // Events
 
 Array.from(numbers.children).forEach(number => {
-    number.addEventListener("click", (e) => {
+    number.addEventListener("mousedown", (e) => {
         
         if (memory.num1 == "0" && e.target.textContent.toString() == "0") {
             return
@@ -197,7 +197,7 @@ Array.from(numbers.children).forEach(number => {
 })
 
 Array.from(operators.children).forEach(operator => {
-    operator.addEventListener("click", (e) => {
+    operator.addEventListener("mousedown", (e) => {
 
         lastOperator = memory.op;
         memory.op = e.target.textContent;
@@ -231,9 +231,9 @@ Array.from(operators.children).forEach(operator => {
 
 })
 
-restart.addEventListener("click", restarting)
+restart.addEventListener("mousedown", restarting)
 
-dot.addEventListener("click", (e) => {
+dot.addEventListener("mousedown", (e) => {
 
     if (memory.num1 == "") {
         memory.num1 = "0.";
@@ -248,7 +248,7 @@ dot.addEventListener("click", (e) => {
     }
 })
 
-del.addEventListener("click", (e) => {
+del.addEventListener("mousedown", (e) => {
 
     if (equal) {return}
 
@@ -278,19 +278,25 @@ document.addEventListener("keydown", (event) => {
     if (pressedKey in dictSymbols || listOperators.includes(pressedKey)) {
         if (pressedKey in dictSymbols) {pressedKey = dictSymbols[pressedKey]}
         idx = listOperators.indexOf(pressedKey);
-        operators.children[idx].click();
+        sleepToGetKeyboardEffect(operators.children[idx])
     }
     else if (listNumbers.includes(Number(pressedKey))) {
         idx = listNumbers.indexOf(Number(pressedKey));
-        if (idx != -1) {numbers.children[idx].click();}
+        if (idx != -1) {sleepToGetKeyboardEffect(numbers.children[idx])}
     }
     else if (pressedKey in dictSpecialChar) {
         idx = dictSpecialChar[pressedKey];
-        if (idx !== undefined) {specialChar.children[idx].click();
+        if (idx !== undefined) {sleepToGetKeyboardEffect(specialChar.children[idx]);
     }}
 })
 
-document.querySelector("#result").addEventListener("click", (e) => {
+async function sleepToGetKeyboardEffect(obj) {
+    obj.dispatchEvent(new MouseEvent('mousedown'))
+    await new Promise(resolve => setTimeout(resolve, 100))
+    obj.dispatchEvent(new MouseEvent('mouseup'))
+}
+
+document.querySelector("#result").addEventListener("mousedown", (e) => {
     equal = true;
 })
 
