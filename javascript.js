@@ -17,6 +17,8 @@ let memory = {
     op: ""
 }
 
+let equal = false
+
 // Calculator design
 
 const listOperators = ["=", "+", "-", "×", "÷"]
@@ -135,6 +137,11 @@ function restarting() {
 
 Array.from(numbers.children).forEach(number => {
     number.addEventListener("click", (e) => {
+        
+        if (equal) {
+            memory.num1 = "";
+            equal = false;
+        }
 
         if (memory.num1 == "" || !!!memory.op) {
             if (allOkWithSize(memory.num1)) {
@@ -159,6 +166,7 @@ Array.from(operators.children).forEach(operator => {
 
         lastOperator = memory.op;
         memory.op = e.target.textContent;
+        equal = false;
 
         if (memory.num1 == "" && memory.op == "-") {
             memory.num1 = 0
@@ -241,3 +249,6 @@ document.addEventListener("keydown", (event) => {
     }}
 })
 
+document.querySelector("#result").addEventListener("click", (e) => {
+    equal = true;
+})
