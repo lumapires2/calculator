@@ -7,27 +7,31 @@ body {
     align-items: center;
     overflow: hidden;
     font-size: 2rem;
-    color: blueviolet;
+    color: rgb(80, 15, 142);
 }
 
 body > div{
     font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    height: 85%;
-    width: 25%;
+    height: 35rem;
+    width: 20rem;
     border: 5px black solid;
+    border-radius: 0.5rem;
     justify-content: center;
     align-items: center;
     gap: 2%;
+    background-color: rgb(0, 0, 0);
 }
 
 .screen {
     display: flex;
     flex-direction: column;
     border: 1px black solid;
+    border-radius: 0.5rem;
     width: 95%;
     height: 15%;
+    background-color: yellowgreen;
 }
 
 .keyboard {
@@ -52,15 +56,15 @@ body > div{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    border: 1px black solid;
     width: 90%;
-    height: 85%;
+    height: 80%;
+    color: white;
+    background-color: rgb(0, 0, 0);
 }
 
 #display {
     width: 100%;
     height: 100%;
-    border: 1px rgb(0, 0, 0) solid;
     text-align: end;
 }
 
@@ -70,7 +74,9 @@ body > div{
     align-items: center;
     width: 33%;
     flex-grow: 1;
-    border: 1px rgb(0, 0, 0) solid;
+    background-color: rgb(54, 54, 54);
+    border: 2px  rgb(0, 0, 0) solid;
+    border-radius: 1rem;
     box-sizing: border-box;
 }
 
@@ -80,33 +86,71 @@ body > div{
     align-items: center;
     justify-content: center;
     width: 20%;
+    color: white;
+    background-color: rgb(0, 0, 0);
 }
 
 .operators > div {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 18%;
+    height: 20%;
     width: 100%;
-    border: 1px rgb(0, 0, 0) solid;
+    border: 2px rgb(0, 0, 0) solid;
+    border-radius: 1rem;
+    background-color: rgb(228, 118, 0);
+    margin: 0.1rem;
 }
 
 .specialChar {
     display: flex;
     flex-direction: row;
     width: 90%;
-    height: 10%;
+    height: 20%;
+    background-color: rgb(0, 0, 0);
+    color: rgb(0, 0, 0);
 }
 
 .specialChar > div {
-    border: 1px rgb(0, 0, 0) solid;
+    border: 2px rgb(0, 0, 0) solid;
+    border-radius: 1rem;
     width: 33.34%;
     font-size: 0.9rem;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: rgb(180, 181, 160);
+    margin: 0.2rem;
 }
 
-#result {
-    height: 28%;
+#dot {
+    font-size: 2rem;
+}
+
+#restart {
+    font-size: 1.5rem;
+}
+
+.specialChar > .mouseover{
+    background-color: rgb(250, 252, 217);
+}
+
+.numbers > .mouseover{
+    background-color: rgb(86, 86, 86);
+}
+
+.operators > .mouseover{
+    background-color:  rgb(227, 155, 78);
+}
+
+.specialChar > .mousedown1.mousedown2{
+    background-color: rgb(124, 125, 108);
+}
+
+.numbers > .mousedown1.mousedown2{
+    background-color: rgb(28, 28, 28);
+}
+
+.operators > .mousedown1.mousedown2{
+    background-color: rgb(150, 84, 15);
 }

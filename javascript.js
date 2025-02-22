@@ -19,6 +19,11 @@ let memory = {
 
 let equal = false
 
+let keyboard = document.querySelector(".keyboard").children
+let opButtons = document.querySelector(".operators").children
+let specButtons = document.querySelector(".specialChar").children
+let numButtons = document.querySelector(".numbers").children
+
 // Calculator design
 
 const listOperators = ["=", "+", "-", "×", "÷"]
@@ -288,3 +293,31 @@ document.addEventListener("keydown", (event) => {
 document.querySelector("#result").addEventListener("click", (e) => {
     equal = true;
 })
+
+responsiveButtons(opButtons)
+responsiveButtons(specButtons)
+responsiveButtons(numButtons)
+
+function responsiveButtons(children) {
+    Array.from(children).forEach(button => {
+    
+        button.addEventListener("mouseover", (event) => {
+            button.classList.add("mouseover");
+        });
+        
+        button.addEventListener("mousedown", (event) => {
+            // Two classes for this style overwrite mouseover class style
+            button.classList.add("mousedown1");
+            button.classList.add("mousedown2");
+        });
+        
+        button.addEventListener("mouseout", (event) => {
+            button.classList.remove("mouseover");
+        });
+        
+        button.addEventListener("mouseup", (event) => {
+            button.classList.remove("mousedown1");
+            button.classList.remove("mousedown2");
+        });
+    });
+}
