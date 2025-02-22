@@ -5,6 +5,7 @@ const numbers = document.querySelector(".numbers")
 
 const display = document.querySelector("#display")
 
+const specialChar = document.querySelector(".specialChar")
 const dot = document.querySelector("#dot")
 const del = document.querySelector("#delete")
 const restart = document.querySelector("#restart")
@@ -22,7 +23,7 @@ let memory = {
 
 // Calculator design
 
-let listOperators = ["=", "+", "-", "×", "÷"]
+const listOperators = ["=", "+", "-", "×", "÷"]
 
 let listNumbers = []
 for (let i=9; i>=0; i--) {listNumbers.push(i)}
@@ -37,7 +38,6 @@ function addChildElementsBasedOnList(baseList, father) {
         father.appendChild(div)
         if (item == "=") {div.id = "result"}
     })
-
 }
 
 // Math functions
@@ -130,7 +130,7 @@ function cleanDisplay() {
 }
 
 function restarting() {
-    num = num1 = num2 = "";
+    memory.num = memory.num1 = memory.num2 = "";
     lastOperator = currentOperator = undefined;
     cleanDisplay()
 }
@@ -221,3 +221,27 @@ del.addEventListener("click", (e) => {
     display.textContent = memory.num1 + " " + memory.op + " " + memory.num2
 
 })
+
+// Keyboard trigger:
+
+const dictSymbols = {"Enter": "=", "*": "×", "/": "÷"}
+const dictSpecialChar = {".": 1, "Backspace": 2}
+
+document.addEventListener("keydown", (event) => {
+    let idx
+    pressedKey = event.key;
+    if (pressedKey in dictSymbols || listOperators.includes(pressedKey)) {
+        if (pressedKey in dictSymbols) {pressedKey = dictSymbols[pressedKey]}
+        idx = listOperators.indexOf(pressedKey);
+        operators.children[idx].click();
+    }
+    else if (listNumbers.includes(Number(pressedKey))) {
+        idx = listNumbers.indexOf(Number(pressedKey));
+        if (idx != -1) {numbers.children[idx].click();}
+    }
+    else if (pressedKey in dictSpecialChar) {
+        idx = dictSpecialChar[pressedKey];
+        if (idx !== undefined) {specialChar.children[idx].click();
+    }}
+})
+
