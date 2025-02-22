@@ -152,13 +152,7 @@ Array.from(numbers.children).forEach(number => {
             if (allOkWithSize(memory.num2)) {
                 memory.num2 =  memory.num2.toString() + e.target.textContent.toString();
                 memory.num = memory.num2;
-
-                if (memory.num2.toString().indexOf(".") == -1) {
-                    display.textContent = display.textContent + " " + memory.num2;
-                } else {
-                    display.textContent = display.textContent + e.target.textContent;
-                }
-                
+                display.textContent = display.textContent + e.target.textContent;
             }
         }
     })
@@ -172,10 +166,10 @@ Array.from(operators.children).forEach(operator => {
 
         if (memory.num1 == "" && memory.op == "-") {
             memory.num1 = 0
-            display.textContent = memory.num1 + " " + memory.op
+            display.textContent = memory.num1 + " " + memory.op + " "
 
         } else if (!memory.num1 == "" && memory.num2 == "") {
-            display.textContent = memory.num1 + " " + memory.op
+            display.textContent = memory.num1 + " " + memory.op + " "
 
         } else if (!memory.num1 == "" && !memory.num2 == "") {
             displayResult();
@@ -186,7 +180,7 @@ Array.from(operators.children).forEach(operator => {
                 memory.num2 = memory.op = "";
 
             } else {
-                display.textContent = display.textContent + " " + memory.op;
+                display.textContent = display.textContent + " " + memory.op + " ";
             }
         }
 
