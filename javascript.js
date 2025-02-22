@@ -1,4 +1,4 @@
-const nDecimal = 8
+const nDecimal = 9
 
 const operators = document.querySelector(".operators")
 const numbers = document.querySelector(".numbers")
@@ -40,7 +40,6 @@ function addChildElementsBasedOnList(baseList, father) {
 
 // Math functions
 
-
 function add() {
     return parseFloat(memory.num1) + parseFloat(memory.num2)
 }
@@ -67,26 +66,43 @@ dictOperations = {"+": add, "-": subtract, "×": multiply, '÷': divide, "=": re
 function gettingOperationResult(operator) {   
 
     result = dictOperations[operator](parseFloat(memory.num1), parseFloat(memory.num2));
-    memory.num = result
+    memory.num = result;
 
     if (!allOkWithSize()) {
         before = result.toString().indexOf(".");
-        before = before == -1 ? 0 : before;
-        result = parseFloat(result).toFixed(nDecimal + 1 - before);
+        if (before == -1) {
+            result = result > parseInt("9".repeat(nDecimal))? parseInt("9".repeat(nDecimal)): result;
+        } else {
+            result = parseFloat(result).toFixed(nDecimal - before);
+        }
+        
     };
 
     return result;
 }
 
 function resulting() {
-    opResult = gettingOperationResult(currentOperator);
-    display.textContent = opResult;
+    opResult = gettingOperationResult(memory.op);
+    displaying(opResult);
     memory.num = memory.num2 = "";
     memory.num1 = opResult;
 }
 
 
 // Display
+
+function displaying(text) {
+
+    text = text.toString();
+
+    if (text == undefined) {
+        text = "";
+    } else if (text.includes(". ")) {
+        text = text.replace(". ", " ");
+    }
+
+    display.textContent = text;
+}
 
 function displayResult() {
 
@@ -96,16 +112,17 @@ function displayResult() {
     memory.num2 = "";
 
     if (isNaN(result)) {
-        display.textContent = "ERROR";
+        displaying("ERROR");
 
     } else {
-        display.textContent = result;        
+        displaying(result);        
     }
 
 }
 
 function allOkWithSize(str=memory.num) {
-    if (str.toString().length > nDecimal + 1) {
+    str = str.toString().replace(".", "")
+    if (str.toString().length > nDecimal) {
         return false;
     } else {
         return true;
@@ -114,8 +131,8 @@ function allOkWithSize(str=memory.num) {
 
 function treatingDots(number) {
     if (number.indexOf(".") == -1) {
-        display.textContent = display.textContent + "."
-        return number.toString() + "."
+        displaying(display.textContent + ".");
+        return number.toString() + ".";
     } else {
         return number
     }
@@ -129,7 +146,7 @@ function cleanDisplay() {
 
 function restarting() {
     memory.num = memory.num1 = memory.num2 = "";
-    lastOperator = currentOperator = undefined;
+    lastOperator = memory.op = undefined;
     cleanDisplay()
 }
 
@@ -138,6 +155,19 @@ function restarting() {
 Array.from(numbers.children).forEach(number => {
     number.addEventListener("click", (e) => {
         
+        if (memory.num1 == "0" && e.target.textContent.toString() == "0") {
+            return
+        } else if (memory.num2 == "0" && e.target.textContent.toString() == "0") {
+            return
+        }
+
+        if (memory.num1 == "0" && e.target.textContent.toString() != "0") {
+            memory.num1 = "";
+        } else if (memory.num2 == "0" && e.target.textContent.toString() != "0") {
+            display.textContent = display.textContent.slice(0, -1);
+            memory.num2 = "";
+        }
+
         if (equal) {
             memory.num1 = "";
             equal = false;
@@ -147,7 +177,7 @@ Array.from(numbers.children).forEach(number => {
             if (allOkWithSize(memory.num1)) {
                 memory.num1 = memory.num1.toString() + e.target.textContent.toString();
                 memory.num = memory.num1;
-                display.textContent = memory.num1;
+                displaying(memory.num1);
             }        
         }
 
@@ -155,7 +185,7 @@ Array.from(numbers.children).forEach(number => {
             if (allOkWithSize(memory.num2)) {
                 memory.num2 =  memory.num2.toString() + e.target.textContent.toString();
                 memory.num = memory.num2;
-                display.textContent = display.textContent + e.target.textContent;
+                displaying(display.textContent + e.target.textContent);
             }
         }
     })
@@ -169,22 +199,26 @@ Array.from(operators.children).forEach(operator => {
         equal = false;
 
         if (memory.num1 == "" && memory.op == "-") {
-            memory.num1 = 0
-            display.textContent = memory.num1 + " " + memory.op + " "
+            memory.num1 = 0;
+            displaying(memory.num1 + " " + memory.op + " ");
+
+        } else if (!memory.num1 == "" && memory.num2 == "" && memory.op == "=") {
+            equal = false;
+            memory.op = ""
 
         } else if (!memory.num1 == "" && memory.num2 == "") {
-            display.textContent = memory.num1 + " " + memory.op + " "
+            displaying(memory.num1 + " " + memory.op + " ");
 
         } else if (!memory.num1 == "" && !memory.num2 == "") {
             displayResult();
 
             if (memory.op == "=") {
-                display.textContent = result;
+                displaying(result);
                 memory.num1 = result;
                 memory.num2 = memory.op = "";
 
             } else {
-                display.textContent = display.textContent + " " + memory.op + " ";
+                displaying(display.textContent + " " + memory.op + " ");
             }
         }
 
@@ -210,13 +244,15 @@ dot.addEventListener("click", (e) => {
 })
 
 del.addEventListener("click", (e) => {
-    
+
+    if (equal) {return}
+
     if (!memory.num2 == "") {
         memory.num2 = memory.num2.toString().slice(0, -1)
 
     } else if (!memory.op == "") {
         memory.op = ""
-        lastOperator = ""
+        lastOperator = undefined
 
     } else if (!memory.num1 == "") {
         memory.num1 = memory.num1.toString().slice(0, -1)
@@ -229,7 +265,7 @@ del.addEventListener("click", (e) => {
 // Keyboard trigger:
 
 const dictSymbols = {"Enter": "=", "*": "×", "/": "÷"}
-const dictSpecialChar = {".": 1, "Backspace": 2}
+const dictSpecialChar = {",": 1, "Backspace": 2}
 
 document.addEventListener("keydown", (event) => {
     let idx
